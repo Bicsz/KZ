@@ -1,19 +1,20 @@
 from random import random
-from math import exp
-
-#в нейроне изначельно задаем случайный вес для каждого, вычисляем сумму весов для каждого нейрона с помощью функции активации и задаем дельту
+from math import exp #Библиотека для работы с математическими операциями
+#в нейроне мы задаем все веса сначала случайным образом, вычисляем сумму весов для каждого нейрона с помощью функции активации и задаем дельту и от дельты изменяем веса и смотрим, пока результат работы нейрона не будет схож с требуцемым
 class Neuron:
     def __init__(self, weights_count): #подсчет весов
         self.__weights = [0] * (weights_count + 1)
         self.__y = 0.0
-        self.__net = 0.0  #задаем сеть
+        self.__net = 0.0 
         self.__rangeMin = - 0.0003
         self.__rangeMax = 0.0003
         self.randomize_weights()
 
-    def randomize_weights(self):   # Шаг 2 случайные веса
+    # Задаем случайные веса нейрону
+    def randomize_weights(self):
         for i in range(len(self.__weights)):
             self.__weights[i] = self.__rangeMin + (self.__rangeMax - self.__rangeMin) * random()
+
 
     def activation_func(self):
         return 1.0 / (1.0 + exp(-self.__net))
@@ -21,7 +22,7 @@ class Neuron:
     def derivative(self):
         return self.activation_func() * (1.0 - self.activation_func())
 
-    # шаг 4 Для каждого j-го нейрона вычислить взвешенную сумму
+    # Для каждого j-го нейрона вычислить взвешенную сумму
     # входных сигналов netj и выходной сигнал yj на основании функции активации f
     def calc_y(self, x):
         self.__net = self.__weights[0]
@@ -38,7 +39,21 @@ class Neuron:
     def get_bias(self):
         return self.__weights[0]
 
-    # веса дельт прибавляем к весам нейрона
+    #веса дельт, по факту прибавляем  к весам дельт  обычные веса по i каждый раз
     def correct_weights(self, weights_deltas):
         for i in range(len(self.__weights)):
             self.__weights[i] += weights_deltas[i]
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,18 +1,17 @@
 import numpy as np
 import cv2
-from numpy.core._multiarray_umath import ndarray
 
 
 class DataGenerator:
     def __init__(self, patterns, labels, scale_size, shuffle=False, input_channels=3, nb_classes=5):
 
-        # Объявление параметров
+        # Init params
         self.__n_classes = nb_classes
-        self.__shuffle = shuffle 
-        self.__input_channels = input_channels #количество входных каналов/сиггналов
-        self.__scale_size = scale_size #размер сетки/шкалы
-        self.__pointer = 0 #указатель
-        self.__data_size = len(labels) #размер данных
+        self.__shuffle = shuffle  
+        self.__input_channels = input_channels #входные сигналы
+        self.__scale_size = scale_size #размер шкалы
+        self.__pointer = 0  #указатель
+        self.__data_size = len(labels)  #размер данных
         self.__patterns = patterns #шаблоны
         self.__labels = labels
         
@@ -22,54 +21,52 @@ class DataGenerator:
     def get_data_size(self):
         return self.__data_size
 
-    def shuffle_data(self): #функция перемешивания исходных изображений и меток
-        
+    def shuffle_data(self): #Случайное перемешивание изображений и меток
+
         images = self.__patterns.copy()
         labels = self.__labels.copy()
         self.__patterns = []
         self.__labels = []
         
-        
-        # создается список, в соответствии с которым мешаются данные
+        # создать список перестановочного индекса и перемешать данные в соответствии с списком
         idx = np.random.permutation(len(labels))
         for i in idx:
             self.__patterns.append(images[i])
             self.__labels.append(labels[i])
                 
-    def reset_pointer(self): # пермещение указателя в начало списка и перемешивание данных
-        
+    def reset_pointer(self):  #сбросить указатель на начало списка
+
         self.__pointer = 0
         
         if self.__shuffle:
             self.shuffle_data()
 
-    def next(self):  #Эта функция получает следующие n (= batch_size) изображений из
+    def next(self): #Эта функция получает следующие n (= batch_size) изображений из
         # списка путей и маркирует и загружает изображения в них в память
+
         # Получить следующую партию изображения (путь) и метки
         path = self.__patterns[self.__pointer]
         label = self.__labels[self.__pointer]
         
-
-        # переключить указатель
+        # обновить указатель
         self.__pointer += 1
-        
-        # прочитать следующий шаблон
+
+        # Читать шаблон
         if self.__input_channels == 1:
             img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         else:
             img = cv2.imread(path)
 
-        # масштабирование изображения, но сохраняя пропорцию
+        # масштабировать изображение
         img = cv2.resize(img, (self.__scale_size[0], self.__scale_size[1]))
         img = img.astype(np.float32)
 
-        # чтение шаблона
         if self.__input_channels == 1:
             img = img.reshape((img.shape[0], img.shape[1], 1)).astype(np.float32)
 
-        # Элементы в одну кодировку
-        one_hot_labels: ndarray = np.zeros(self.__n_classes)
+        # Развернуть метки до одной кодировки
+        one_hot_labels = np.zeros(self.__n_classes) #Вернуть новый массив заданной формы и типа, заполненный нулями.nt  6
         one_hot_labels[label] = 1
 
-        # вернуть массив с изображениями и метками в нем
+        # вернуть массив изображений и меток
         return img, one_hot_labels
