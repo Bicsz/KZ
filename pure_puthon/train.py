@@ -1,6 +1,6 @@
-from pure_python.one_layer_net import OneLayerNet
+from one_layer_net import OneLayerNet
 from datareader import DataReader
-from pure_python._vector import Vector
+from _vector import Vector
 from datetime import datetime
 import numpy as np #NumPy — библиотека с открытым исходным кодом для языка программирования Python.
 # Возможности: поддержка многомерных массивов;
